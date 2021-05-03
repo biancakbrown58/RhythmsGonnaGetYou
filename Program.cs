@@ -73,6 +73,7 @@ namespace RhythmsGonnaGetYou
         public bool IsExplicit { get; set; }
         public DateTime ReleaseDate { get; set; }
         public List<Song> Songs { get; set; }
+        // public List<Band> Bands { get; set; }
         public int BandId { get; set; }
         public Band Band { get; set; }
     }
@@ -171,11 +172,12 @@ namespace RhythmsGonnaGetYou
 
                 else if (choice == "V")
                 {
-                    Console.WriteLine("Which Band");
-                    var userInput = Console.ReadLine().ToUpper();
-                    foreach (var album in bandCollection)
+                    var viewBands = context.Bands.OrderBy(b => b.Name);
+                    Console.WriteLine("View all Bands");
+
+                    foreach (var band in viewBands)
                     {
-                        Console.WriteLine($"{album.Band.Name}");
+                        Console.WriteLine($"{band.Name}");
                     }
 
                 }
