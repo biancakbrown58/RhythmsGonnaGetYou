@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace RhythmsGonnaGetYou
 {
+
     class RhythmsGonnaGetYouContext : DbContext
     {
         public DbSet<Band> Bands { get; set; }
@@ -19,6 +20,37 @@ namespace RhythmsGonnaGetYou
             optionsBuilder.UseNpgsql("server=localhost;database=RhythmsGonnaGetYou");
         }
     }
+
+    public class MenuOptions
+    {
+        // string name string countryOfOrigin, int numberOfMembers, string website, string style, bool isSigned, string contactName, string contactPhoneNumber)
+        // public void AddBand(string name, string countryOfOrigin, int numberOfMembers, string website, string style, bool isSigned, string contactName, string contactPhoneNumber)
+        // {
+        // var context = new RhythmsGonnaGetYouContext();
+
+        // {
+        //     Name = name,
+        //     CountryOfOrigin = countryOfOrigin,
+        //     NumberOfMembers = numberOfMembers,
+        //     Website = website,
+        //     Style = style,
+        //     IsSigned = isSigned,
+        //     ContactName = contactName,
+        //     ContactPhoneNumber = contactPhoneNumber
+
+        // };
+        //     context.Bands.Add(newBand);
+        //     context.SaveChanges();
+        // }
+
+        // private List<Band> bands = new List<Band>();
+        // public void AddBand(Band newBand)
+        // {
+        //   var context = new RhythmsGonnaGetYouContext();
+        //     context.Bands.Add(newBand);
+
+        // }
+    }
     class Band
     {
         public int Id { get; set; }
@@ -27,9 +59,11 @@ namespace RhythmsGonnaGetYou
         public int NumberOfMembers { get; set; }
         public string Website { get; set; }
         public string Style { get; set; }
-        public bool IsSigned { get; set; }
+        public string IsSigned { get; set; }
+        public string ContactName { get; set; }
         public string ContactPhoneNumber { get; set; }
         public List<Album> Albums { get; set; }
+
     }
 
     class Album
@@ -55,18 +89,105 @@ namespace RhythmsGonnaGetYou
 
     class Program
     {
+
         static void Main(string[] args)
         {
+            static string AskForString(string prompt)
+            {
+                Console.Write(prompt);
+                var userInput = Console.ReadLine();
+                return userInput;
+            }
+            static int AskForInteger(string prompt)
+            {
+                Console.Write(prompt);
+                int userInput;
+                var intUserInput = Int32.TryParse(Console.ReadLine(), out userInput);
+
+                if (intUserInput)
+                {
+                    return userInput;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid");
+                    return 0;
+                }
+            }
+            var menuOptions = new MenuOptions();
             var context = new RhythmsGonnaGetYouContext();
             var bandCollection = context.Albums.Include(album => album.Songs).Include(album => album.Band);
 
-            var bandCount = context.Bands.Count();
-            Console.WriteLine($"{bandCount}");
-
-            foreach (var album in bandCollection)
+            var isRunning = true;
+            // newBand = new Band();
+            // var newBand = new Band();
+            while (isRunning)
             {
-                Console.WriteLine($"{album.Title} - {album.Band.Name}");
+                Console.WriteLine("");
+                Console.WriteLine("-----------------------");
+                Console.WriteLine("-----------------------");
+                Console.WriteLine("Welcome to Band Manager");
+                Console.WriteLine("-----------------------");
+                Console.WriteLine("-----------------------");
+                Console.WriteLine("");
+                Console.Write("What would you like to do (A)dd - (V)iew - (U)pdate ");
+
+                var choice = Console.ReadLine().ToUpper();
+                if (choice == "A")
+                {
+                    var band = new Band();
+                    Console.WriteLine("Would you like to add a:");
+                    Console.Write("(B)and - (A)lbum - (S)ong: ");
+                    var userInput = Console.ReadLine().ToUpper();
+                    // var newBand = new Band();
+                    if (userInput == "B")
+                    {
+
+                        Console.WriteLine("Band adding");
+
+
+                        band.Name = AskForString("Band name: ");
+                        band.CountryOfOrigin = AskForString("From: ");
+                        band.NumberOfMembers = AskForInteger("How many members: ");
+                        band.Website = AskForString("Website: ");
+                        band.Style = AskForString("Music Genre: ");
+                        // band.IsSigned = YesOrNo();
+                        // Console.WriteLine("Signed: ");
+                        band.IsSigned = AskForString("Signed: ");
+
+                        band.ContactName = AskForString("Contact Name: ");
+                        band.ContactPhoneNumber = AskForString("Contact Phone Number: ");
+
+                        // context.AddBand(band);
+                        context.Bands.Add(band);
+                        context.SaveChanges();
+                    }
+                    else
+                    {
+                        Console.WriteLine("No");
+                    }
+                }
+
+
+                else if (choice == "V")
+                {
+                    Console.WriteLine("Which Band");
+                    var userInput = Console.ReadLine().ToUpper();
+                    foreach (var album in bandCollection)
+                    {
+                        Console.WriteLine($"{album.Band.Name}");
+                    }
+
+                }
+
+                else
+                {
+                    isRunning = false;
+                }
             }
         }
     }
 }
+
+
+
