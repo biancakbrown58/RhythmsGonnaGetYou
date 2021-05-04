@@ -36,6 +36,21 @@ namespace RhythmsGonnaGetYou
             context.Albums.Add(album);
             context.SaveChanges();
         }
+
+        public void AddSong(int trackNumber, string songTitle, decimal duration, int albumId)
+        {
+            var context = new RhythmsGonnaGetYouContext();
+            var song = new Song
+            {
+                TrackNumber = trackNumber,
+                Title = songTitle,
+                Duration = duration,
+                AlbumId = albumId
+
+            };
+            context.Songs.Add(song);
+            context.SaveChanges();
+        }
     }
     class Band
     {
@@ -153,18 +168,36 @@ namespace RhythmsGonnaGetYou
                 else if (choice == "AA")
                 {
                     var viewBands = context.Bands.OrderBy(b => b.Name);
-                    Console.WriteLine(" Bands");
+                    Console.WriteLine("Which Band #: ");
 
                     foreach (var band in viewBands)
                     {
                         Console.WriteLine($"{band.Name} - {band.Id}");
                     }
                     var bandById = int.Parse(Console.ReadLine());
-                    Console.WriteLine($"Adding to {bandById}");
+                    Console.WriteLine($"Adding an Album to {bandById}");
                     var albumToAdd = context.Bands.First(alb => alb.Id == bandById);
                     var newAlbumTitle = AskForString("Album Title: ");
                     var newAlbumIsExplicit = AskForString("Is it Explicit?: ");
                     menuOptions.AddAlbum(newAlbumTitle, bandById, newAlbumIsExplicit);
+                    context.SaveChanges();
+                }
+
+                else if (choice == "AS")
+                {
+                    var viewAlbums = context.Albums.OrderBy(a => a.Title);
+                    Console.WriteLine("Which Album #: ");
+                    foreach (var album in viewAlbums)
+                    {
+                        Console.WriteLine($"{album.Title} - {album.Id}");
+                    }
+                    var albumById = int.Parse(Console.ReadLine());
+                    Console.WriteLine($"Adding songs to {albumById}");
+                    var songToAdd = context.Albums.First(alb => alb.Id == albumById);
+                    var newTrackNumber = AskForInteger("What's the track number?: ");
+                    var newSongTitle = AskForString("Song Title: ");
+                    var newDuration = AskForInteger("How long is it?: ");
+                    menuOptions.AddSong(newTrackNumber, newSongTitle, newDuration, albumById);
                     context.SaveChanges();
                 }
                 // View all bands
@@ -176,6 +209,22 @@ namespace RhythmsGonnaGetYou
                     foreach (var band in viewBands)
                     {
                         Console.WriteLine($"{band.Name} - {band.Id}");
+                    }
+                }
+                else if (choice == "VBA")
+                {
+                    var viewBands = context.Bands.OrderBy(b => b.Name);
+                    Console.WriteLine("Which Band #: ");
+
+                    foreach (var band in viewBands)
+                    {
+                        Console.WriteLine($"{band.Name} - {band.Id}");
+                    }
+                    var bandById = int.Parse(Console.ReadLine());
+                    var albums = context.Albums.Where(alb => bandById == alb.BandId);
+                    foreach (var album in albums)
+                    {
+                        Console.WriteLine($"{album.Title}");
                     }
                 }
                 else
