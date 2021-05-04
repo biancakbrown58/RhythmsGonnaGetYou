@@ -21,35 +21,21 @@ namespace RhythmsGonnaGetYou
         }
     }
 
-    public class MenuOptions
+    class MenuOptions
     {
-        // string name string countryOfOrigin, int numberOfMembers, string website, string style, bool isSigned, string contactName, string contactPhoneNumber)
-        // public void AddBand(string name, string countryOfOrigin, int numberOfMembers, string website, string style, bool isSigned, string contactName, string contactPhoneNumber)
-        // {
-        // var context = new RhythmsGonnaGetYouContext();
-
-        // {
-        //     Name = name,
-        //     CountryOfOrigin = countryOfOrigin,
-        //     NumberOfMembers = numberOfMembers,
-        //     Website = website,
-        //     Style = style,
-        //     IsSigned = isSigned,
-        //     ContactName = contactName,
-        //     ContactPhoneNumber = contactPhoneNumber
-
-        // };
-        //     context.Bands.Add(newBand);
-        //     context.SaveChanges();
-        // }
-
-        // private List<Band> bands = new List<Band>();
-        // public void AddBand(Band newBand)
-        // {
-        //   var context = new RhythmsGonnaGetYouContext();
-        //     context.Bands.Add(newBand);
-
-        // }
+        public void AddAlbum(string albumTitle, int bandId, string isExplicit)
+        {
+            var context = new RhythmsGonnaGetYouContext();
+            var album = new Album
+            {
+                Title = albumTitle,
+                ReleaseDate = DateTime.Now,
+                BandId = bandId,
+                IsExplicit = isExplicit
+            };
+            context.Albums.Add(album);
+            context.SaveChanges();
+        }
     }
     class Band
     {
@@ -70,7 +56,7 @@ namespace RhythmsGonnaGetYou
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public bool IsExplicit { get; set; }
+        public string IsExplicit { get; set; }
         public DateTime ReleaseDate { get; set; }
         public List<Song> Songs { get; set; }
         // public List<Band> Bands { get; set; }
@@ -131,45 +117,57 @@ namespace RhythmsGonnaGetYou
                 Console.WriteLine("-----------------------");
                 Console.WriteLine("-----------------------");
                 Console.WriteLine("");
-                Console.Write("What would you like to do (A)dd - (V)iew - (U)pdate ");
+                Console.Write("What would you like to do (A): Add Band - (AA): Add Album - (V): View - (U): Update ");
 
                 var choice = Console.ReadLine().ToUpper();
                 if (choice == "A")
                 {
                     var band = new Band();
+                    var newAlbum = new Album();
                     Console.WriteLine("Would you like to add a:");
-                    Console.Write("(B)and - (A)lbum - (S)ong: ");
+                    Console.Write("(B)and - (AA)lbum - (S)ong: ");
                     var userInput = Console.ReadLine().ToUpper();
                     // var newBand = new Band();
                     if (userInput == "B")
                     {
-
-                        Console.WriteLine("Band adding");
-
-
+                        Console.WriteLine("Adding a Band");
                         band.Name = AskForString("Band name: ");
                         band.CountryOfOrigin = AskForString("From: ");
                         band.NumberOfMembers = AskForInteger("How many members: ");
                         band.Website = AskForString("Website: ");
                         band.Style = AskForString("Music Genre: ");
-                        // band.IsSigned = YesOrNo();
-                        // Console.WriteLine("Signed: ");
                         band.IsSigned = AskForString("Signed: ");
-
                         band.ContactName = AskForString("Contact Name: ");
                         band.ContactPhoneNumber = AskForString("Contact Phone Number: ");
 
-                        // context.AddBand(band);
                         context.Bands.Add(band);
                         context.SaveChanges();
                     }
                     else
                     {
-                        Console.WriteLine("No");
+                        isRunning = false;
                     }
                 }
 
+                // Add Album
+                else if (choice == "AA")
+                {
+                    var viewBands = context.Bands.OrderBy(b => b.Name);
+                    Console.WriteLine(" Bands");
 
+                    foreach (var band in viewBands)
+                    {
+                        Console.WriteLine($"{band.Name} - {band.Id}");
+                    }
+                    var bandById = int.Parse(Console.ReadLine());
+                    Console.WriteLine($"Adding to {bandById}");
+                    var albumToAdd = context.Bands.First(alb => alb.Id == bandById);
+                    var newAlbumTitle = AskForString("Album Title: ");
+                    var newAlbumIsExplicit = AskForString("Is it Explicit?: ");
+                    menuOptions.AddAlbum(newAlbumTitle, bandById, newAlbumIsExplicit);
+                    context.SaveChanges();
+                }
+                // View all bands
                 else if (choice == "V")
                 {
                     var viewBands = context.Bands.OrderBy(b => b.Name);
@@ -177,11 +175,9 @@ namespace RhythmsGonnaGetYou
 
                     foreach (var band in viewBands)
                     {
-                        Console.WriteLine($"{band.Name}");
+                        Console.WriteLine($"{band.Name} - {band.Id}");
                     }
-
                 }
-
                 else
                 {
                     isRunning = false;
