@@ -132,15 +132,15 @@ namespace RhythmsGonnaGetYou
                 Console.WriteLine("-----------------------");
                 Console.WriteLine("-----------------------");
                 Console.WriteLine("");
-                Console.Write("What would you like to do (A): Add Band - (AA): Add Album - (V): View - (U): Update ");
+                Console.Write("What would you like to do (A): Add Band (AA): Add Album (VB): View Bands (VA): View Albums (VBA): View Band Albums (U): Update ");
 
                 var choice = Console.ReadLine().ToUpper();
                 if (choice == "A")
                 {
                     var band = new Band();
                     var newAlbum = new Album();
-                    Console.WriteLine("Would you like to add a:");
-                    Console.Write("(B)and - (AA)lbum - (S)ong: ");
+                    // Console.WriteLine("Would you like to add a:");
+                    // Console.Write("(B)and - (AA)lbum - (S)ong: ");
                     var userInput = Console.ReadLine().ToUpper();
                     // var newBand = new Band();
                     if (userInput == "B")
@@ -201,14 +201,24 @@ namespace RhythmsGonnaGetYou
                     context.SaveChanges();
                 }
                 // View all bands
-                else if (choice == "V")
+                else if (choice == "VB")
                 {
                     var viewBands = context.Bands.OrderBy(b => b.Name);
                     Console.WriteLine("View all Bands");
 
                     foreach (var band in viewBands)
                     {
-                        Console.WriteLine($"{band.Name} - {band.Id}");
+                        Console.WriteLine($"{band.Name} - {band.Id} -{band.IsSigned}");
+                    }
+                }
+                else if (choice == "VA")
+                {
+                    var viewAlbums = context.Albums.OrderBy(alb => alb.ReleaseDate);
+                    Console.WriteLine("View all Albums by Release Date");
+
+                    foreach (var album in viewAlbums)
+                    {
+                        Console.WriteLine($"{album.Title} - {album.ReleaseDate}");
                     }
                 }
                 else if (choice == "VBA")
@@ -226,6 +236,28 @@ namespace RhythmsGonnaGetYou
                     {
                         Console.WriteLine($"{album.Title}");
                     }
+                }
+
+                else if (choice == "RB")
+                {
+                    var bands = context.Bands.OrderBy(b => b.Name);
+                    foreach (var band in bands)
+                    {
+                        Console.WriteLine($"{band.Id} - {band.Name}");
+                    }
+                    var bandById = int.Parse(Console.ReadLine());
+                    var signBand = context.Bands.First(s => s.Id == bandById);
+                    var isSigned = "yes";
+                    if (isSigned == "yes")
+                    {
+                        signBand.IsSigned = "no";
+                    }
+                    else
+                    {
+                        signBand.IsSigned = "yes";
+                    }
+                    context.SaveChanges();
+
                 }
                 else
                 {
